@@ -1,0 +1,3 @@
+<tns:findFlight xmlns:tns="http://soap.training.mulesoft.com/" >
+	<destination>#[flowVars.destId]</destination>
+</tns:findFlight>

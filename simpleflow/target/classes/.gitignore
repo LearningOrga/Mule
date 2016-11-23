@@ -1,14 +1,2 @@
-/1myjukebox.raml
-/appConfig-dev.properties
-/appConfig-prod.properties
-/consumebank.xml
-/data.xml
 /db.xml
-/lib/
-/log4j2.xml
-/mule-app.properties
-/mule-deploy.properties
-/myapi.raml
-/restwebservice.xml
-/simpleflow.xml
-/soap.xml
+/.gitignore

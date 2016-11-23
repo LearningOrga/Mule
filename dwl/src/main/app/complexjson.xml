@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+    <flow name="complexjsonFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/static" doc:name="HTTP"/>
+        <set-payload value="[{&quot;airlineName&quot;:&quot;United&quot;,&quot;price&quot;:400,&quot;departureDate&quot;:&quot;2015/03/20&quot;,&quot;planeType&quot;:&quot;Boeing 737&quot;,&quot;origination&quot;:&quot;MUA&quot;,&quot;flightCode&quot;:&quot;ER38sd&quot;,&quot;availableSeats&quot;:0,&quot;destination&quot;:&quot;SFO&quot;},{&quot;airlineName&quot;:&quot;United&quot;,&quot;price&quot;:945,&quot;departureDate&quot;:&quot;2015/09/11&quot;,&quot;planeType&quot;:&quot;Boeing 757&quot;,&quot;origination&quot;:&quot;MUA&quot;,&quot;flightCode&quot;:&quot;ER39rk&quot;,&quot;availableSeats&quot;:54,&quot;destination&quot;:&quot;SFO&quot;},{&quot;airlineName&quot;:&quot;United&quot;,&quot;price&quot;:954,&quot;departureDate&quot;:&quot;2015/02/12&quot;,&quot;planeType&quot;:&quot;Boeing 777&quot;,&quot;origination&quot;:&quot;MUA&quot;,&quot;flightCode&quot;:&quot;ER39rj&quot;,&quot;availableSeats&quot;:23,&quot;destination&quot;:&quot;SFO&quot;}]" mimeType="application/json" doc:name="Set Payload"/>
+        <dw:transform-message doc:name="Transform Message">
+            <dw:input-payload doc:sample="sample_data\json_1.json"/>
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+//%output application/java
+// custom types
+%type mydate=:date {format:"yyyy/MM/dd"}
+%type mystring=:string {format: "dd MMM yyyy"}
+---
+flights @(size: sizeOf payload, test:"true"): {
+	( 	
+ 	payload map {
+		flight @(destJ: $.destination): {
+			airlineJ: lower $.airlineName,
+			flightPriceJ: $.price,
+			depDateJ: $.departureDate,
+			flightTypeJ: $.planeType replace "Boeing" with "Boring",
+			originJ: upper $.origination,
+			planeCodeJ: capitalize $.flightCode,
+			emptySeatJ : camelize $.availableSeats
+			
+		}
+	}  	
+ )
+}
+
+
+//  payload map {
+//	airlineJ: $.airlineName,
+//	flightPriceJ: $.price,
+//	depDateJ: $.departureDate as :mydate as :mystring,
+//	flightTypeJ: $.planeType,
+//	originJ: $.origination,
+//	planeCodeJ: $.flightCode,
+//	emptySeatJ : $.availableSeats,
+//	destJ: $.destination	
+// } filter ($.emptySeatJ>0) orderBy $.emptySeatJ distinctBy $.airlineJ
+// } as :object { class: "dwl.Flight" }
+]]></dw:set-payload>
+        </dw:transform-message>
+    </flow>
+</mule>

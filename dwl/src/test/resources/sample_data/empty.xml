@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='windows-1252'?>
+<flights size="3" test="true">
+  <flight destJ="SFO">
+    <airlineJ>united</airlineJ>
+    <flightPriceJ>400</flightPriceJ>
+    <depDateJ>2015/03/20</depDateJ>
+    <flightTypeJ>Boing 737</flightTypeJ>
+    <originJ>MUA</originJ>
+    <planeCodeJ>Er38sd</planeCodeJ>
+    <emptySeatJ>0</emptySeatJ>
+  </flight>
+  <flight destJ="SFO">
+    <airlineJ>united</airlineJ>
+    <flightPriceJ>945</flightPriceJ>
+    <depDateJ>2015/09/11</depDateJ>
+    <flightTypeJ>Boing 757</flightTypeJ>
+    <originJ>MUA</originJ>
+    <planeCodeJ>Er39rk</planeCodeJ>
+    <emptySeatJ>54</emptySeatJ>
+  </flight>
+  <flight destJ="SFO">
+    <airlineJ>united</airlineJ>
+    <flightPriceJ>954</flightPriceJ>
+    <depDateJ>2015/02/12</depDateJ>
+    <flightTypeJ>Boing 777</flightTypeJ>
+    <originJ>MUA</originJ>
+    <planeCodeJ>Er39rj</planeCodeJ>
+    <emptySeatJ>23</emptySeatJ>
+  </flight>
+</flights>

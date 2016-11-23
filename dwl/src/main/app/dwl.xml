@@ -15,12 +15,37 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
     </flow>
     <flow name="dwlFlow1">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/flights" allowedMethods="POST" doc:name="HTTP"/>
+        <set-variable variableName="name" value="Jitendra" doc:name="Variable"/>
         <dw:transform-message doc:name="Transform Message">
             <dw:input-payload doc:sample="sample_data\json.json"/>
+            <dw:input-variable doc:sample="sample_data\MyPojo.dwl" variableName="name"/>
             <dw:set-payload><![CDATA[%dw 1.0
-%output application/java
+%namespace tns1 http://www.testurl.com/test
+%output application/xml
+//%output application/json
+//%output application/java
 ---
-payload]]></dw:set-payload>
+//java
+//[payload.destination,payload.airline,"MUA",flowVars.name]
+// json
+//[payload.destination]
+//{dest: payload.destination}
+
+//{dest: payload.destination,
+	//aline: payload.airline,
+	//origin: "MUA",
+	//passengerName : flowVars.name,
+	//noOfPass : payload.noOfPass as :number 
+	//when payload.noOfPass != null and payload.noOfPass !="" otherwise 2}
+
+tns1#flightDetails @(dest: payload.destination): {
+	aline: payload.airline,
+	origin: {
+		origion1 : "1",
+		origion2: "2"
+	},
+	tns1#passangerName: flowVars.name}
+ ]]></dw:set-payload>
         </dw:transform-message>
         <logger message="#[payload]" level="INFO" doc:name="Logger"/>
     </flow>
