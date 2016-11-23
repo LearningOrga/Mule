@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <queued-asynchronous-processing-strategy name="Queued_Asynchronous_Processing_Strategy" maxThreads="100" minThreads="10" threadTTL="2000" maxBufferSize="500" maxQueueSize="200" doc:name="Queued Asynchronous Processing Strategy"/>
+    <flow name="pt2Flow">
+        <file:inbound-endpoint path="C:\copy\mule\LabSetup 3.8\LabSetup 3.8\input" moveToDirectory="C:\copy\mule\LabSetup 3.8\LabSetup 3.8\output" responseTimeout="10000" doc:name="File"/>
+        <file:file-to-string-transformer doc:name="File to String"/>
+        <expression-component doc:name="Expression"><![CDATA[import java.util.Arrays;
+
+payload=Arrays.asList(payload.split("\n"));
+
+
+]]></expression-component>
+        <set-session-variable variableName="startTime" value="#[System.currentTimeMillis()]" doc:name="Session Variable"/>
+        <collection-splitter doc:name="Collection Splitter"/>
+        <vm:outbound-endpoint exchange-pattern="one-way" path="myq" doc:name="VM"/>
+    </flow>
+    <flow name="pt2Flow1" processingStrategy="Queued_Asynchronous_Processing_Strategy">
+        <vm:inbound-endpoint exchange-pattern="one-way" path="myq" doc:name="VM"/>
+        <component class="com.mulesoft.EnricherAuctionComponent" doc:name="Java"/>
+        <collection-aggregator failOnTimeout="true" doc:name="Collection Aggregator"/>
+        <component class="com.mulesoft.HighestBidderAuctionComponent" doc:name="Java"/>
+        <logger message="#[sessionVars.startTime+&quot;-&quot;+System.currentTimeMillis()]" level="INFO" doc:name="Logger"/>
+    </flow>
+</mule>

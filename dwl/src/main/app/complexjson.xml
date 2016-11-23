@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -46,8 +46,9 @@ flights @(size: sizeOf payload, test:"true"): {
 //	planeCodeJ: $.flightCode,
 //	emptySeatJ : $.availableSeats,
 //	destJ: $.destination	
-// } filter ($.emptySeatJ>0) orderBy $.emptySeatJ distinctBy $.airlineJ
-// } as :object { class: "dwl.Flight" }
+// { filter ($.emptySeatJ>0) orderBy $.emptySeatJ distinctBy $.airlineJ}
+//  as :object { class: "dwl.Flight" 
+//}
 ]]></dw:set-payload>
         </dw:transform-message>
     </flow>
