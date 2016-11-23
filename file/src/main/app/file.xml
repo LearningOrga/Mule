@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+    <flow name="fileFlow">
+        <file:inbound-endpoint path="C:\copy\mule\LabSetup 3.8\LabSetup 3.8\input" moveToPattern="#[server.nanoTime() +'_'+ message.inboundProperties.originalFilename]" moveToDirectory="C:\copy\mule\LabSetup 3.8\LabSetup 3.8\output" responseTimeout="10000" metadata:id="692a99b5-81df-4750-ae6a-72e358bf5133" doc:name="File">
+            <file:filename-regex-filter pattern=".*csv" caseSensitive="true"/>
+        </file:inbound-endpoint>
+        <file:file-to-string-transformer doc:name="File to String"/>
+        <file:outbound-endpoint path="C:\copy\mule\LabSetup 3.8\LabSetup 3.8\destination" outputPattern="#[server.nanoTime()].txt" responseTimeout="10000" doc:name="File"/>
+        <logger level="INFO" doc:name="Logger"/>
+    </flow>
+</mule>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:request-config name="HTTP_Request_Configuration" host="ilt.mulesoft-training.com" port="80" basePath="essentials/united/flights" doc:name="HTTP Request Configuration"/>
+    <flow name="webserviceFlow">
+        <http:listener config-ref="Consumer" path="/united/{dest}" allowedMethods="GET" doc:name="HTTP"/>
+        <set-variable variableName="destination" value="#[message.inboundProperties.'http.uri.params'.dest]" doc:name="Variable"/>
+        <http:request config-ref="HTTP_Request_Configuration" path="/{destination}" method="GET" doc:name="HTTP">
+            <http:request-builder>
+                <http:uri-param paramName="destination" value="#[flowVars.destination]"/>
+            </http:request-builder>
+        </http:request>
+        <object-to-string-transformer  doc:name="Object to String"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+    </flow>
+    
+</mule>
