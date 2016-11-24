@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <spring:beans>
+        <spring:bean id="mp" name="mp" class="javacode.MyProcessor" scope="singleton"/>
+    </spring:beans>
+    <flow name="javacodeFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/java" allowedMethods="GET" doc:name="HTTP"/>
+        <set-payload value="mytestpayload" doc:name="Set Payload"/>
+        <set-variable variableName="myName" value="Jitendra" doc:name="Variable"/>
+        <component doc:name="Java">
+<!--         <method-entry-point-resolver> -->
+<!--         <include-entry-point method="process1"/> -->
+<!--         </method-entry-point-resolver> -->
+	<spring-object bean="mp" />
+            
+        </component>
+    </flow>
+</mule>
