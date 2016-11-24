@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <db:mysql-config name="MySQL_Configuration" host="iltdb.mulesoft-training.com" port="3306" user="mule" password="mule" database="training" doc:name="MySQL Configuration"/>
+    <flow name="pollingFlow" processingStrategy="synchronous">
+        <poll doc:name="Poll">
+            <fixed-frequency-scheduler frequency="5000"/>
+            <watermark variable="maxAccountId" default-expression="0" selector="MAX" selector-expression="#[payload.accountID]"/>
+            <db:select config-ref="MySQL_Configuration" doc:name="Database">
+                <db:parameterized-query><![CDATA[select * from accounts where  accountID > #[payload.maxAccountId]]]></db:parameterized-query>
+            </db:select>
+        </poll>
+        <foreach doc:name="For Each">
+            <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        </foreach>
+    </flow>
+</mule>

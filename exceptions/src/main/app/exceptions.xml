@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+    <jms:activemq-connector name="Active_MQ" brokerURL="tcp://localhost:61616" validateConnections="true" maxRedelivery="4" doc:name="Active MQ"/>
+    <rollback-exception-strategy name="RollbackExceptionStrategy">
+        <expression-component doc:name="Expression"><![CDATA[Thread.sleep(1000);]]></expression-component>
+        <on-redelivery-attempts-exceeded>
+            <jms:outbound-endpoint queue="DLQ" connector-ref="Active_MQ" doc:name="JMS"/>
+        </on-redelivery-attempts-exceeded>
+    </rollback-exception-strategy>
+    <catch-exception-strategy name="CatchExceptionStrategy">
+        <set-payload value="WE got exception" doc:name="Set Payload"/>
+        <set-property propertyName="status" value="500" doc:name="Property"/>
+    </catch-exception-strategy>
+    <flow name="exceptionsFlow">
+        <jms:inbound-endpoint exchange-pattern="request-response" queue="requestq" connector-ref="Active_MQ" doc:name="JMS">
+            <jms:transaction action="ALWAYS_BEGIN"/>
+        </jms:inbound-endpoint>
+        <append-string-transformer message="#[payload]+'_'+mystring" doc:name="Append String"/>
+        <logger level="INFO" doc:name="Logger"/>
+        <jms:outbound-endpoint queue="output" connector-ref="Active_MQ" doc:name="JMS">
+            <jms:transaction action="ALWAYS_JOIN"/>
+        </jms:outbound-endpoint>
+        <component class="exceptions.myProcessor" doc:name="Java"/>
+        <choice-exception-strategy doc:name="Choice Exception Strategy">
+            <catch-exception-strategy doc:name="Catch Exception Strategy"/>
+            <exception-strategy ref="RollbackExceptionStrategy" doc:name="Reference Exception Strategy"/>
+            <exception-strategy ref="CatchExceptionStrategy" doc:name="Reference Exception Strategy"/>
+        </choice-exception-strategy>
+    </flow>
+</mule>
